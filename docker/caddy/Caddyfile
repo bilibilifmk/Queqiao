@@ -1,0 +1,34 @@
+{
+	auto_https disable_redirects
+	default_sni localhost
+}
+
+(queqiao_routes) {
+	encode gzip zstd
+
+	@chromium path /chromium /chromium/*
+	handle @chromium {
+		forward_auth queqiao:8000 {
+			uri /auth/chromium
+			header_up -Connection
+			header_up -Upgrade
+			header_up -Sec-WebSocket-Key
+			header_up -Sec-WebSocket-Version
+			header_up -Sec-WebSocket-Extensions
+		}
+		reverse_proxy chromium:3000
+	}
+
+	reverse_proxy queqiao:8000
+}
+
+:80 {
+	import queqiao_routes
+}
+
+{$CADDY_HOSTS} {
+	tls internal
+	import queqiao_routes
+}
+
+import /certs/*.caddy

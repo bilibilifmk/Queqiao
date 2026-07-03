@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>鹊桥 Queqiao</title>
+    <link rel="icon" type="image/png" href="/static/logo.png">
+    <link rel="apple-touch-icon" href="/static/logo.png">
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <!-- Ambient Background -->
+    <div class="ambient-bg"></div>
+
+    <!-- Global Loader -->
+    <div id="appLoader" class="app-loader" aria-live="polite" aria-busy="true">
+      <svg class="spinner" viewBox="0 0 50 50">
+        <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
+      </svg>
+      <p>正在连接...</p>
+    </div>
+
+    <main id="app" class="app-container">
+      
+      <!-- Login View -->
+      <section id="loginView" class="view login-view">
+        <div class="login-brand">
+          <img src="/static/logo.png" alt="鹊桥" class="login-logo">
+          <div class="login-title">
+            <h1>鹊桥</h1>
+            <p>内外网链接管理</p>
+          </div>
+        </div>
+        <div class="login-panel glass-panel">
+          <form id="loginForm" class="form-layout" autocomplete="off">
+            <div class="input-group">
+              <input id="username" class="modern-input" placeholder=" " autocomplete="off" autocapitalize="none" spellcheck="false" required>
+              <label for="username">用户名</label>
+            </div>
+            <div class="input-group">
+              <input id="password" type="password" class="modern-input" placeholder=" " autocomplete="new-password" required>
+              <label for="password">密码</label>
+            </div>
+            <div class="form-options">
+              <label class="checkbox-label">
+                <input id="rememberLogin" type="checkbox">
+                <span class="fake-checkbox"></span>
+                保持在线
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">连接</button>
+            <p id="loginError" class="error-msg"></p>
+          </form>
+        </div>
+      </section>
+
+      <!-- Dashboard View -->
+      <section id="dashboardView" class="view dashboard-view hidden">
+        <header class="top-nav glass-panel">
+          <div class="nav-brand">
+            <img src="/static/logo.png" alt="鹊桥" class="nav-logo">
+            <div class="nav-title">
+              <h1>鹊桥</h1>
+              <span id="connectionState" class="status-badge connecting">初始化</span>
+            </div>
+          </div>
+          <div class="nav-actions">
+            <div class="search-bar">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input id="searchInput" placeholder="搜索链接...">
+            </div>
+            <button id="addLinkBtn" class="btn btn-icon" title="新建链接">
+              <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            </button>
+            <div class="dropdown-container">
+              <button id="settingsMenuBtn" class="btn btn-icon" title="设置" aria-expanded="false">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              </button>
+              <div id="settingsMenu" class="dropdown-menu hidden glass-panel">
+                <button id="editModeBtn">编辑模式</button>
+                <button id="releaseProxyBtn">立即释放透传</button>
+                <button id="settingsBtn">账户设置</button>
+                <div class="divider"></div>
+                <button id="logoutBtn" class="text-danger">断开连接</button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="workspace">
+          <div class="grid-header">
+            <h2>链接</h2>
+            <span id="linkCount" class="counter">0 个链接</span>
+          </div>
+          <div id="tileGrid" class="tile-grid"></div>
+        </div>
+
+        <!-- Proxy Sliding Pane -->
+        <aside id="proxyPane" class="proxy-pane glass-panel hidden" tabindex="-1">
+          <div class="pane-header">
+            <div>
+              <p class="pane-subtitle">链接详情</p>
+              <h2 id="proxyTitle">加载中...</h2>
+            </div>
+            <div class="pane-actions">
+              <button id="inlineProxyBtn" class="btn btn-primary btn-sm">透传</button>
+              <button id="inlineEditBtn" class="btn btn-secondary btn-sm">编辑</button>
+              <button id="closeProxyBtn" class="btn btn-icon btn-sm" title="关闭"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+          </div>
+          <div class="pane-content">
+             <div class="info-card">
+               <label>内网地址</label>
+               <div id="inlineInternalUrl" class="mono-text truncate" title="">...</div>
+             </div>
+             <div class="info-card">
+               <label>外网地址</label>
+               <div id="inlineExternalUrl" class="mono-text truncate" title="">...</div>
+             </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- Dialogs -->
+      <dialog id="linkDialog" class="modal glass-panel">
+        <form id="linkForm" method="dialog">
+          <div class="modal-header">
+            <h2 id="dialogTitle">链接配置</h2>
+            <button id="closeDialogBtn" type="button" class="btn btn-icon btn-sm"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          </div>
+          <div class="modal-body form-layout">
+            <input id="linkId" type="hidden">
+            <div class="row-group">
+                <div class="media-upload-group">
+                  <div class="avatar-preview" id="avatarPreviewBox">
+                     <span id="avatarFallback">?</span>
+                  </div>
+                  <label class="btn btn-secondary btn-sm upload-btn">
+                     上传图片
+                     <input id="linkImageUpload" type="file" accept="image/*" hidden>
+                  </label>
+                  <input id="linkImage" type="hidden">
+                </div>
+                <div class="flex-1 form-layout">
+                    <div class="input-group">
+                      <input id="linkTitle" class="modern-input" placeholder=" " required maxlength="80">
+                      <label for="linkTitle">名称</label>
+                    </div>
+                    <div class="input-group">
+                      <input id="linkDescription" class="modern-input" placeholder=" " maxlength="160">
+                      <label for="linkDescription">描述</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid-columns">
+              <div class="input-group">
+                <input id="linkInternal" class="modern-input mono-text" placeholder=" ">
+                <label for="linkInternal">内网地址</label>
+              </div>
+              <div class="input-group">
+                <input id="linkExternal" class="modern-input mono-text" placeholder=" ">
+                <label for="linkExternal">外网地址</label>
+              </div>
+            </div>
+
+            <div class="grid-columns">
+              <div class="input-group">
+                <input id="linkOrder" type="number" class="modern-input" placeholder=" " value="0">
+                <label for="linkOrder">排序</label>
+              </div>
+              <div class="form-options align-center">
+                <label class="checkbox-label">
+                  <input id="linkProxy" type="checkbox" checked>
+                  <span class="fake-checkbox"></span>
+                  启用透传
+                </label>
+              </div>
+            </div>
+            <p id="linkError" class="error-msg"></p>
+          </div>
+          <div class="modal-footer dialog-footer">
+            <button id="deleteLinkBtn" type="button" class="btn btn-danger hidden">删除链接</button>
+            <div class="spacer"></div>
+            <button id="cancelDialogBtn" type="button" class="btn btn-secondary">取消</button>
+            <button type="submit" class="btn btn-primary">保存</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="settingsDialog" class="modal glass-panel">
+        <form id="settingsForm" method="dialog">
+          <div class="modal-header">
+            <h2>安全设置</h2>
+            <button id="closeSettingsBtn" type="button" class="btn btn-icon btn-sm"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          </div>
+          <div class="modal-body form-layout">
+            <div class="input-group">
+              <input id="currentPassword" type="password" class="modern-input" placeholder=" " autocomplete="current-password" required>
+              <label for="currentPassword">当前密码</label>
+            </div>
+            <div class="input-group">
+              <input id="newPassword" type="password" class="modern-input" placeholder=" " autocomplete="new-password" required minlength="4">
+              <label for="newPassword">新密码</label>
+            </div>
+            <div class="input-group">
+               <input id="confirmPassword" type="password" class="modern-input" placeholder=" " autocomplete="new-password" required minlength="4">
+               <label for="confirmPassword">确认新密码</label>
+            </div>
+            <p id="settingsError" class="error-msg"></p>
+          </div>
+          <div class="modal-footer">
+            <button id="cancelSettingsBtn" type="button" class="btn btn-secondary">取消</button>
+            <button type="submit" class="btn btn-primary">更新密码</button>
+          </div>
+        </form>
+      </dialog>
+
+      <dialog id="cropDialog" class="modal glass-panel fullscreen-mobile">
+        <form id="cropForm" method="dialog" class="flex-col h-full">
+          <div class="modal-header">
+            <h2>裁剪图片</h2>
+            <button id="closeCropBtn" type="button" class="btn btn-icon btn-sm"><svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+          </div>
+          <div class="modal-body flex-1 overflow-hidden relative">
+            <p class="text-sm text-dim mb-2 text-center">拖动调整选区</p>
+            <div id="cropStage" class="crop-stage">
+              <img id="cropImage" alt="">
+              <div id="cropBox" class="crop-box"></div>
+            </div>
+            <div class="mt-4 flex-center gap-2">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+              <input id="cropSize" type="range" min="30" max="100" value="100" class="flex-1">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="11" y1="8" x2="11" y2="14"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+            </div>
+            <p id="cropError" class="error-msg text-center mt-2"></p>
+          </div>
+          <div class="modal-footer">
+            <button id="cancelCropBtn" type="button" class="btn btn-secondary">取消</button>
+            <button id="confirmCropBtn" type="submit" class="btn btn-primary">确认裁剪</button>
+          </div>
+        </form>
+      </dialog>
+
+    </main>
+
+    <!-- Templates -->
+    <template id="tileTemplate">
+      <article class="tile card-hover" draggable="false">
+        <div class="tile-content">
+          <div class="tile-media">
+             <img class="tile-img hidden" src="" alt="">
+             <span class="tile-letter"></span>
+             <div class="tile-overlay glass-panel">
+               <div class="tile-action-group">
+                 <button class="btn btn-secondary btn-sm external-btn">外网</button>
+                 <button class="btn btn-secondary btn-sm internal-btn">内网</button>
+                 <button class="btn btn-primary btn-sm proxy-btn">透传</button>
+               </div>
+               <button class="btn btn-secondary btn-sm w-full edit-btn edit-action">编辑</button>
+             </div>
+          </div>
+          <div class="tile-info">
+            <h3 class="tile-title truncate"></h3>
+            <p class="tile-desc truncate text-dim text-sm"></p>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>

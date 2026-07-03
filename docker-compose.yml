@@ -1,0 +1,61 @@
+services:
+  queqiao:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: queqiao-app
+    labels:
+      - dev.orbstack.icon=http://localhost:${HTTP_PORT:-9807}/static/orbstack-logo.png
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - QUEQIAO_SECRET_KEY=${QUEQIAO_SECRET_KEY:-change-this-in-production}
+      - QUEQIAO_DATABASE=/app/data/queqiao.sqlite3
+      - QUEQIAO_IMAGE_MAX_BYTES=${QUEQIAO_IMAGE_MAX_BYTES:-8388608}
+      - QUEQIAO_WS_PROXY_MAX_BYTES=${QUEQIAO_WS_PROXY_MAX_BYTES:-134217728}
+      - QUEQIAO_PROXY_IDLE_SECONDS=${QUEQIAO_PROXY_IDLE_SECONDS:-1800}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  chromium:
+    build:
+      context: ./docker/chromium-src
+      dockerfile: Dockerfile
+    image: queqiao/chromium:local
+    container_name: queqiao-chromium
+    labels:
+      - dev.orbstack.icon=http://localhost:${HTTP_PORT:-9807}/static/orbstack-logo.png
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Shanghai
+      - SUBFOLDER=/chromium/
+      - TITLE=Queqiao Chromium
+      - RESTART_APP=true
+      - CHROME_CLI=--no-first-run --disable-dev-shm-usage
+      - LC_ALL=zh_CN.UTF-8
+    volumes:
+      - ./docker/chromium/config:/config
+    shm_size: "1gb"
+    restart: unless-stopped
+
+  gateway:
+    image: caddy:2-alpine
+    container_name: queqiao-gateway
+    labels:
+      - dev.orbstack.icon=http://localhost:${HTTP_PORT:-9807}/static/orbstack-logo.png
+    depends_on:
+      - queqiao
+      - chromium
+    environment:
+      - CADDY_HOSTS=${CADDY_HOSTS:-localhost, 127.0.0.1}
+    ports:
+      - "${HTTP_PORT:-9807}:80"
+      - "${HTTPS_PORT:-9808}:443"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/certs:/certs:ro
+      - ./docker/caddy/data:/data
+      - ./docker/caddy/config:/config
+    restart: unless-stopped

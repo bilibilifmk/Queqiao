@@ -1,0 +1,14 @@
+[project]
+name = "queqiao"
+version = "0.1.0"
+description = "Queqiao link bridge for internal and external web shortcuts."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "flask>=3.0.0",
+    "flask-sock>=0.7.0",
+    "requests>=2.32.0",
+]
+
+[tool.uv]
+package = false
