@@ -3,6 +3,10 @@
 <p align="center">
   <img src="app/static/logo.png" alt="Queqiao 鹊桥" width="160">
 </p>
+
+
+![img](./img/img.png)
+
 部署在OrbStack 进行运行和开发！ img目录提供部分图片！！
 
 ![img](./img/run.png)
